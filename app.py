@@ -115,4 +115,4 @@ def get_image():
     fileOut = replacer(pathToProj,thisID,thisChan,thisFlip,thisLab)
     return send_file(fileOut, mimetype='image/gif')
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0', port=80)
