@@ -4,6 +4,8 @@ from flask import request
 from flask import redirect
 from flask import send_file
 import numpy as np,sys
+from flask_basicauth import BasicAuth
+#sys.path.append("/afs/inf.ed.ac.uk/user/s11/s1144899/PhD/Python Projects/ViewAPI")
 import comp150 as comp150
 ID = "**ID**"
 FLIP = "**F**"
@@ -12,6 +14,10 @@ LAB = "**LAB**"
 chanDict = {'R':'Red','G':'Green'}
 flipDict = {'F':'Fliped','':'Original'}
 app = Flask(__name__)
+app.config['BASIC_AUTH_USERNAME'] = 'vfb'
+app.config['BASIC_AUTH_PASSWORD'] = 'toronto'
+app.config['BASIC_AUTH_FORCE'] = True
+basic_auth = BasicAuth(app)
 resPath = "/media/s1144899/My Passport/Results/"
 pathToScoreFile = resPath+ID+"/Scores_.pkl"
 pathToProj = resPath+ID+"/Projections/"+ID+"_"+CHAN+"_"+FLIP+"_"+LAB+".png"
@@ -68,13 +74,13 @@ def searchSim():
     if thisMatID != -1:
         resArray = comp150.getResults(900,infoCond,thisMatID)
 	orderedArr = np.argsort(resArray)[::-1]
-	html+= "<TABLE><TR><TD>Channel</TD><TD>Flipped Or Not</TD><TD>Matching Score</TD><TD>Alignment Score</TD><TD>Image</TD></TR>"
+	html+= "<TABLE><TR><TD>Channel</TD><TD>Flipped Or Not</TD><TD>Matching Score</TD><TD>Alignment Score</TD><TD>Image</TD><TD>GMR</TD></TR>"
 	for i in range(10):
             thisInfo = infoList[orderedArr[i]]
 	    fI = open(replacer(pathToScoreFile,thisInfo[0],"","",""))
 	    scoreInfo = pickle.load(fI)
 	    fI.close()
-	    html+="<TR><TD>"+chanDict[thisInfo[1]]+"</TD><TD>"+flipDict[thisInfo[2]]+"</TD><TD>"+str(resArray[orderedArr[i]])+"</TD><TD>"+'{0:.3f}'.format(scoreInfo[thisInfo[1]][thisInfo[3]]['singleScore'])+"</TD><TD><IMG src='../getProj?id="+thisInfo[0]+"&chan="+thisInfo[1]+"&flip="+thisInfo[2]+"&lab="+str(thisInfo[3])+"' height='20%'></TD></TR>"
+	    html+="<TR><TD>"+chanDict[thisInfo[1]]+"</TD><TD>"+flipDict[thisInfo[2]]+"</TD><TD>"+str(resArray[orderedArr[i]])+"</TD><TD>"+'{0:.3f}'.format(scoreInfo[thisInfo[1]][thisInfo[3]]['singleScore'])+"</TD><TD><IMG src='../getProj?id="+thisInfo[0]+"&chan="+thisInfo[1]+"&flip="+thisInfo[2]+"&lab="+str(thisInfo[3])+"' height='20%'></TD><TD>"+infoData[thisInfo[0]]['fileGMRa']+"</TD></TR>"
 	html+="</TABLE>"
     else:
         html+="No results found!"
