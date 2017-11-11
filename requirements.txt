@@ -2,3 +2,6 @@ Flask
 Redis
 Numpy
 Flask-BasicAuth
+Pandas
+Scipy
+scikit-learn
